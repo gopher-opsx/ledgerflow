@@ -1,18 +1,35 @@
 package config
 
-import "os"
+import (
+	"os"
+	"strings"
+)
 
 type TransactionAPI struct {
-	HTTPAddr string
+	HTTPAddr     string
+	KafkaBrokers []string
+	KafkaTopic   string
 }
 
 func LoadTransactionAPI() TransactionAPI {
-	addr := os.Getenv("HTTP_ADDR")
-	if addr == "" {
-		addr = ":8080"
+	httpAddr := os.Getenv("HTTP_ADDR")
+	if httpAddr == "" {
+		httpAddr = ":8080"
+	}
+
+	brokers := os.Getenv("KAFKA_BROKERS")
+	if brokers == "" {
+		brokers = "localhost:29092,localhost:39092,localhost:49092"
+	}
+
+	topic := os.Getenv("KAFKA_TRANSACTION_TOPIC")
+	if topic == "" {
+		topic = "ledgerflow.transactions"
 	}
 
 	return TransactionAPI{
-		HTTPAddr: addr,
+		HTTPAddr:     httpAddr,
+		KafkaBrokers: strings.Split(brokers, ","),
+		KafkaTopic:   topic,
 	}
 }

@@ -72,6 +72,23 @@
         "x": 12,
         "y": 6
       }
+    },
+    {
+      "type": "timeseries",
+      "title": "Consumer Lag",
+      "id": 5,
+      "targets": [
+        {
+          "expr": "kafka_consumergroup_lag",
+          "legendFormat": "{{consumergroup}} / {{topic}} / p{{partition}}"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      }
     }
   ],
   "schemaVersion": 39,
@@ -89,5 +106,5 @@
   "timezone": "browser",
   "title": "LedgerFlow Overview",
   "uid": "ledgerflow-overview",
-  "version": 1
+  "version": 2
 }

@@ -28,3 +28,12 @@ groups:
         annotations:
           summary: "LedgerFlow Kafka publishing errors detected"
           description: "The Transaction API has failed to publish one or more Kafka events in the last 5 minutes."
+
+      - alert: LedgerFlowConsumerLagHigh
+        expr: kafka_consumergroup_lag > 100
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Kafka consumer lag is high"
+          description: "Consumer group {{ $labels.consumergroup }} has lag {{ $value }}."

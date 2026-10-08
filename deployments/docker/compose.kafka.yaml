@@ -181,5 +181,73 @@ services:
       - controller-1
       - controller-2
       - controller-3
+
+  transaction-api:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      args:
+        SERVICE: transaction-api
+    container_name: ledgerflow-transaction-api
+    environment:
+      HTTP_ADDR: ":8080"
+      KAFKA_BROKERS: "broker-1:19092,broker-2:19092,broker-3:19092"
+      KAFKA_TRANSACTION_TOPIC: "ledgerflow.transactions"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - broker-1
+      - broker-2
+      - broker-3
+
+  ledger-service:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      args:
+        SERVICE: ledger-service
+    container_name: ledgerflow-ledger-service
+    environment:
+      KAFKA_BROKERS: "broker-1:19092,broker-2:19092,broker-3:19092"
+      KAFKA_TRANSACTION_TOPIC: "ledgerflow.transactions"
+      DATABASE_URL: "postgres://ledgerflow:ledgerflow@postgres:5432/ledgerflow?sslmode=disable"
+    depends_on:
+      - broker-1
+      - broker-2
+      - broker-3
+      - postgres
+
+  fraud-service:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      args:
+        SERVICE: fraud-service
+    container_name: ledgerflow-fraud-service
+    environment:
+      KAFKA_BROKERS: "broker-1:19092,broker-2:19092,broker-3:19092"
+      KAFKA_TRANSACTION_TOPIC: "ledgerflow.transactions"
+      KAFKA_FRAUD_RESULTS_TOPIC: "ledgerflow.fraud-results"
+    depends_on:
+      - broker-1
+      - broker-2
+      - broker-3
+
+  notification-service:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      args:
+        SERVICE: notification-service
+    container_name: ledgerflow-notification-service
+    environment:
+      KAFKA_BROKERS: "broker-1:19092,broker-2:19092,broker-3:19092"
+      KAFKA_TRANSACTION_TOPIC: "ledgerflow.transactions"
+      KAFKA_NOTIFICATIONS_TOPIC: "ledgerflow.notifications"
+    depends_on:
+      - broker-1
+      - broker-2
+      - broker-3
+
 volumes:
   ledgerflow-postgres:

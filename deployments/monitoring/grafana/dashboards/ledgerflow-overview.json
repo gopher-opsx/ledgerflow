@@ -1,0 +1,93 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "graphTooltip": 1,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Kafka Exporters UP",
+      "id": 1,
+      "targets": [
+        {
+          "expr": "sum(up{job=\"kafka-brokers\"})",
+          "legendFormat": "Kafka exporters"
+        }
+      ],
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Transaction API",
+      "id": 2,
+      "targets": [
+        {
+          "expr": "up{job=\"transaction-api\"}",
+          "legendFormat": "API"
+        }
+      ],
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Accepted Transactions",
+      "id": 3,
+      "targets": [
+        {
+          "expr": "rate(ledgerflow_transaction_api_requests_total{result=\"accepted\"}[5m])",
+          "legendFormat": "accepted/sec"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 6
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Kafka Publish Errors",
+      "id": 4,
+      "targets": [
+        {
+          "expr": "rate(ledgerflow_transaction_api_requests_total{result=\"kafka_publish_error\"}[5m])",
+          "legendFormat": "errors/sec"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 6
+      }
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": [
+    "ledgerflow",
+    "kafka"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "LedgerFlow Overview",
+  "uid": "ledgerflow-overview",
+  "version": 1
+}

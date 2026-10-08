@@ -1,0 +1,30 @@
+groups:
+  - name: ledgerflow-platform
+    rules:
+
+      - alert: LedgerFlowKafkaExporterDown
+        expr: up{job="kafka-brokers"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Kafka JMX exporter is down"
+          description: "Prometheus cannot scrape {{ $labels.instance }}."
+
+      - alert: LedgerFlowTransactionAPIDown
+        expr: up{job="transaction-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "LedgerFlow Transaction API is down"
+          description: "Prometheus cannot scrape the Transaction API."
+
+      - alert: LedgerFlowKafkaPublishErrors
+        expr: increase(ledgerflow_transaction_api_requests_total{result="kafka_publish_error"}[5m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "LedgerFlow Kafka publishing errors detected"
+          description: "The Transaction API has failed to publish one or more Kafka events in the last 5 minutes."

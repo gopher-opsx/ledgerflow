@@ -1,4 +1,4 @@
-.PHONY: fmt test vet build run-api
+.PHONY: fmt test vet build up down topics smoke reset logs
 
 fmt:
 	gofmt -w ./cmd ./internal
@@ -12,5 +12,17 @@ vet:
 build:
 	go build ./...
 
-run-api:
-	go run ./cmd/transaction-api
+up:
+	docker compose -f deployments/docker/compose.kafka.yaml up -d --build
+
+down:
+	docker compose -f deployments/docker/compose.kafka.yaml down
+
+topics:
+	./scripts/init-topics.sh
+
+smoke:
+	./scripts/smoke-test.sh
+
+reset:
+	./scripts/reset.sh

@@ -67,6 +67,8 @@ services:
     environment:
       KAFKA_NODE_ID: 4
       KAFKA_PROCESS_ROLES: broker
+      KAFKA_JMX_PORT: 9999
+      KAFKA_JMX_HOSTNAME: broker-1
 
       KAFKA_LISTENERS: PLAINTEXT://:19092,PLAINTEXT_HOST://:9092
 
@@ -108,6 +110,8 @@ services:
     environment:
       KAFKA_NODE_ID: 5
       KAFKA_PROCESS_ROLES: broker
+      KAFKA_JMX_PORT: 9999
+      KAFKA_JMX_HOSTNAME: broker-2
 
       KAFKA_LISTENERS: PLAINTEXT://:19092,PLAINTEXT_HOST://:9092
 
@@ -149,6 +153,8 @@ services:
     environment:
       KAFKA_NODE_ID: 6
       KAFKA_PROCESS_ROLES: broker
+      KAFKA_JMX_PORT: 9999
+      KAFKA_JMX_HOSTNAME: broker-3
 
       KAFKA_LISTENERS: PLAINTEXT://:19092,PLAINTEXT_HOST://:9092
 
@@ -248,6 +254,61 @@ services:
       - broker-1
       - broker-2
       - broker-3
+
+  jmx-exporter-broker-1:
+    image: dhi.io/jmx-exporter:1
+    container_name: ledgerflow-jmx-exporter-broker-1
+    command:
+      - "9404"
+      - "/etc/jmx/kafka.yml"
+    ports:
+      - "9404:9404"
+    volumes:
+      - ../monitoring/jmx/broker-1.yml:/etc/jmx/kafka.yml:ro
+    environment: { }
+    depends_on:
+      - broker-1
+
+  jmx-exporter-broker-2:
+    image: dhi.io/jmx-exporter:1
+    container_name: ledgerflow-jmx-exporter-broker-2
+    command:
+      - "9404"
+      - "/etc/jmx/kafka.yml"
+    ports:
+      - "9405:9404"
+    volumes:
+      - ../monitoring/jmx/broker-2.yml:/etc/jmx/kafka.yml:ro
+    depends_on:
+      - broker-2
+
+  jmx-exporter-broker-3:
+    image: dhi.io/jmx-exporter:1
+    container_name: ledgerflow-jmx-exporter-broker-3
+    command:
+      - "9404"
+      - "/etc/jmx/kafka.yml"
+    ports:
+      - "9406:9404"
+    volumes:
+      - ../monitoring/jmx/broker-3.yml:/etc/jmx/kafka.yml:ro
+    depends_on:
+      - broker-3
+
+  prometheus:
+    image: prom/prometheus:v3.6.0
+    container_name: ledgerflow-prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    volumes:
+      - ../monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - jmx-exporter-broker-1
+      - jmx-exporter-broker-2
+      - jmx-exporter-broker-3
+      - transaction-api
 
 volumes:
   ledgerflow-postgres:

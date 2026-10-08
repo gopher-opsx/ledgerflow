@@ -1,0 +1,7 @@
+hostPort: broker-1:9999
+
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+
+rules:
+  - pattern: ".*"

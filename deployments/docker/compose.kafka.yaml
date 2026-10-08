@@ -310,5 +310,38 @@ services:
       - jmx-exporter-broker-3
       - transaction-api
 
+  grafana:
+    image: grafana/grafana-enterprise
+    container_name: ledgerflow-grafana
+
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ledgerflow
+
+    ports:
+      - "3000:3000"
+
+    volumes:
+      - ../monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ../monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - ledgerflow-grafana:/var/lib/grafana
+
+    depends_on:
+      - prometheus
+
+  alertmanager:
+    image: prom/alertmanager:v0.34.1
+    container_name: ledgerflow-alertmanager
+
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+
+    volumes:
+      - ../monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+
+    ports:
+      - "9093:9093"
+
 volumes:
   ledgerflow-postgres:
+  ledgerflow-grafana:

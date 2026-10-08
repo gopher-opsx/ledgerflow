@@ -1,0 +1,8 @@
+bin/
+dist/
+.env
+*.log
+.DS_Store
+.vscode/settings.json
+.idea/
+external/

@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ledgerflow
+      POSTGRES_PASSWORD: ledgerflow
+      POSTGRES_DB: ledgerflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - ledgerflow-postgres:/var/lib/postgresql/data
+      - ../../migrations/001_init.sql:/docker-entrypoint-initdb.d/001_init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ledgerflow -d ledgerflow"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  transaction-api:
+    build:
+      context: ../..
+      dockerfile: Dockerfile.transaction-api
+    environment:
+      HTTP_ADDR: ":8080"
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "/transaction-api-healthcheck-placeholder"]
+      disable: true
+
+volumes:
+  ledgerflow-postgres:

@@ -1,0 +1,10 @@
+{
+  "event_id": "evt-100001",
+  "transaction_id": "txn-100001",
+  "account_id": "ACC-1001",
+  "type": "TRANSFER",
+  "amount": 1250.00,
+  "currency": "USD",
+  "destination_account": "ACC-2001",
+  "timestamp": "2026-10-08T12:00:00Z"
+}

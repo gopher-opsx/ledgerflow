@@ -1,0 +1,46 @@
+services:
+  broker-1:
+    environment:
+      KAFKA_LISTENERS: SSL://:19092,SSL_HOST://:9092
+      KAFKA_ADVERTISED_LISTENERS: SSL://broker-1:19092,SSL_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,SSL:SSL,SSL_HOST:SSL
+      KAFKA_INTER_BROKER_LISTENER_NAME: SSL
+      KAFKA_SSL_KEYSTORE_LOCATION: /etc/ledgerflow/security/broker-1.keystore.p12
+      KAFKA_SSL_KEYSTORE_PASSWORD: ledgerflow
+      KAFKA_SSL_KEYSTORE_TYPE: PKCS12
+      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/ledgerflow/security/truststore.p12
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: ledgerflow
+      KAFKA_SSL_TRUSTSTORE_TYPE: PKCS12
+      KAFKA_SSL_CLIENT_AUTH: none
+    volumes:
+      - ../../security/tls:/etc/ledgerflow/security:ro
+  broker-2:
+    environment:
+      KAFKA_LISTENERS: SSL://:19092,SSL_HOST://:9092
+      KAFKA_ADVERTISED_LISTENERS: SSL://broker-2:19092,SSL_HOST://localhost:39092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,SSL:SSL,SSL_HOST:SSL
+      KAFKA_INTER_BROKER_LISTENER_NAME: SSL
+      KAFKA_SSL_KEYSTORE_LOCATION: /etc/ledgerflow/security/broker-2.keystore.p12
+      KAFKA_SSL_KEYSTORE_PASSWORD: ledgerflow
+      KAFKA_SSL_KEYSTORE_TYPE: PKCS12
+      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/ledgerflow/security/truststore.p12
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: ledgerflow
+      KAFKA_SSL_TRUSTSTORE_TYPE: PKCS12
+      KAFKA_SSL_CLIENT_AUTH: none
+    volumes:
+      - ../../security/tls:/etc/ledgerflow/security:ro
+  broker-3:
+    environment:
+      KAFKA_LISTENERS: SSL://:19092,SSL_HOST://:9092
+      KAFKA_ADVERTISED_LISTENERS: SSL://broker-3:19092,SSL_HOST://localhost:49092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,SSL:SSL,SSL_HOST:SSL
+      KAFKA_INTER_BROKER_LISTENER_NAME: SSL
+      KAFKA_SSL_KEYSTORE_LOCATION: /etc/ledgerflow/security/broker-3.keystore.p12
+      KAFKA_SSL_KEYSTORE_PASSWORD: ledgerflow
+      KAFKA_SSL_KEYSTORE_TYPE: PKCS12
+      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/ledgerflow/security/truststore.p12
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: ledgerflow
+      KAFKA_SSL_TRUSTSTORE_TYPE: PKCS12
+      KAFKA_SSL_CLIENT_AUTH: none
+    volumes:
+      - ../../security/tls:/etc/ledgerflow/security:ro

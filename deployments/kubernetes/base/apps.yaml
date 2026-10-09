@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transaction-api
+  namespace: ledgerflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: transaction-api}
+  template:
+    metadata:
+      labels: {app: transaction-api}
+    spec:
+      containers:
+        - name: transaction-api
+          image: ledgerflow/transaction-api:local
+          imagePullPolicy: IfNotPresent
+          env:
+            - {name: HTTP_ADDR, value: ":8080"}
+            - {name: KAFKA_BROKERS, value: "ledgerflow-kafka-bootstrap:9092"}
+            - {name: KAFKA_TRANSACTION_TOPIC, value: "ledgerflow.transactions"}
+          ports:
+            - {containerPort: 8080}
+          readinessProbe:
+            httpGet: {path: /health/ready, port: 8080}
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /health/live, port: 8080}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: transaction-api
+  namespace: ledgerflow
+spec:
+  selector: {app: transaction-api}
+  ports:
+    - {port: 8080, targetPort: 8080}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ledger-service
+  namespace: ledgerflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ledger-service}
+  template:
+    metadata:
+      labels: {app: ledger-service}
+    spec:
+      containers:
+        - name: ledger-service
+          image: ledgerflow/ledger-service:local
+          imagePullPolicy: IfNotPresent
+          env:
+            - {name: KAFKA_BROKERS, value: "ledgerflow-kafka-bootstrap:9092"}
+            - {name: KAFKA_TRANSACTION_TOPIC, value: "ledgerflow.transactions"}
+            - {name: KAFKA_DLT_TOPIC, value: "ledgerflow.transactions.dlt"}
+            - {name: DATABASE_URL, value: "postgres://ledgerflow:ledgerflow@postgres:5432/ledgerflow?sslmode=disable"}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fraud-service
+  namespace: ledgerflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: fraud-service}
+  template:
+    metadata:
+      labels: {app: fraud-service}
+    spec:
+      containers:
+        - name: fraud-service
+          image: ledgerflow/fraud-service:local
+          imagePullPolicy: IfNotPresent
+          env:
+            - {name: KAFKA_BROKERS, value: "ledgerflow-kafka-bootstrap:9092"}
+            - {name: KAFKA_TRANSACTION_TOPIC, value: "ledgerflow.transactions"}
+            - {name: KAFKA_FRAUD_RESULTS_TOPIC, value: "ledgerflow.fraud-results"}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  namespace: ledgerflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: notification-service}
+  template:
+    metadata:
+      labels: {app: notification-service}
+    spec:
+      containers:
+        - name: notification-service
+          image: ledgerflow/notification-service:local
+          imagePullPolicy: IfNotPresent
+          env:
+            - {name: KAFKA_BROKERS, value: "ledgerflow-kafka-bootstrap:9092"}
+            - {name: KAFKA_TRANSACTION_TOPIC, value: "ledgerflow.transactions"}
+            - {name: KAFKA_NOTIFICATIONS_TOPIC, value: "ledgerflow.notifications"}

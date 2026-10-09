@@ -1,3 +1,6 @@
+# Generated training TLS material (never commit private keys)
+security/tls/*
+!security/tls/.gitkeep
 bin/
 dist/
 .env

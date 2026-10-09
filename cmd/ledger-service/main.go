@@ -43,6 +43,11 @@ func main() {
 		topic = "ledgerflow.transactions"
 	}
 
+	dltTopic := os.Getenv("KAFKA_DLT_TOPIC")
+	if dltTopic == "" {
+		dltTopic = "ledgerflow.transactions.dlt"
+	}
+
 	db, err := database.New(
 		ctx,
 		databaseURL,
@@ -61,6 +66,8 @@ func main() {
 			brokers,
 			topic,
 			"ledger-service",
+			dltTopic,
+			3,
 			db,
 		)
 

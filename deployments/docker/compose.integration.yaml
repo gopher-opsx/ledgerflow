@@ -1,0 +1,58 @@
+services:
+  kafka-connect:
+    image: quay.io/debezium/connect:3.7
+    container_name: ledgerflow-kafka-connect
+    environment:
+      BOOTSTRAP_SERVERS: broker-1:19092,broker-2:19092,broker-3:19092
+      GROUP_ID: ledgerflow-connect
+      CONFIG_STORAGE_TOPIC: ledgerflow.connect.configs
+      OFFSET_STORAGE_TOPIC: ledgerflow.connect.offsets
+      STATUS_STORAGE_TOPIC: ledgerflow.connect.status
+      CONFIG_STORAGE_REPLICATION_FACTOR: 3
+      OFFSET_STORAGE_REPLICATION_FACTOR: 3
+      STATUS_STORAGE_REPLICATION_FACTOR: 3
+    ports:
+      - "8083:8083"
+    depends_on:
+      broker-1:
+        condition: service_healthy
+      broker-2:
+        condition: service_healthy
+      broker-3:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  schema-registry:
+    image: apicurio/apicurio-registry:3.3.3
+    container_name: ledgerflow-schema-registry
+    ports:
+      - "8085:8080"
+
+  schema-registry-ui:
+    image: apicurio/apicurio-registry-ui:3.3.3
+    container_name: ledgerflow-schema-registry-ui
+    environment:
+      REGISTRY_API_URL: http://localhost:8085/apis/registry/v3
+    ports:
+      - "8888:8080"
+    depends_on:
+      - schema-registry
+
+  streams-service:
+    build:
+      context: ../..
+      dockerfile: streams/Dockerfile
+    container_name: ledgerflow-streams-service
+    environment:
+      KAFKA_BROKERS: broker-1:19092,broker-2:19092,broker-3:19092
+      INPUT_TOPIC: ledgerflow.transactions
+      OUTPUT_TOPIC: ledgerflow.account-totals
+      APPLICATION_ID: ledgerflow-account-totals
+    depends_on:
+      broker-1:
+        condition: service_healthy
+      broker-2:
+        condition: service_healthy
+      broker-3:
+        condition: service_healthy

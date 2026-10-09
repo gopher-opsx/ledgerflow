@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ledgerflow-postgres-init
+  namespace: ledgerflow
+data:
+  001_init.sql: |
+    CREATE TABLE IF NOT EXISTS accounts (
+      account_id TEXT PRIMARY KEY,
+      display_name TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS transactions (
+      transaction_id TEXT PRIMARY KEY,
+      event_id TEXT NOT NULL UNIQUE,
+      account_id TEXT NOT NULL,
+      destination_account TEXT NOT NULL,
+      transaction_type TEXT NOT NULL,
+      amount NUMERIC(18,2) NOT NULL CHECK (amount > 0),
+      currency CHAR(3) NOT NULL,
+      event_timestamp TIMESTAMPTZ NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS ledger_entries (
+      id BIGSERIAL PRIMARY KEY,
+      transaction_id TEXT NOT NULL REFERENCES transactions(transaction_id),
+      account_id TEXT NOT NULL,
+      direction TEXT NOT NULL CHECK (direction IN ('DEBIT','CREDIT')),
+      amount NUMERIC(18,2) NOT NULL CHECK (amount > 0),
+      currency CHAR(3) NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS processed_events (
+      event_id TEXT PRIMARY KEY,
+      consumer_name TEXT NOT NULL,
+      processed_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ledgerflow-postgres
+  namespace: ledgerflow
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: ledgerflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          args: ["-c", "wal_level=logical", "-c", "max_replication_slots=10", "-c", "max_wal_senders=10"]
+          env:
+            - name: POSTGRES_USER
+              value: ledgerflow
+            - name: POSTGRES_PASSWORD
+              value: ledgerflow
+            - name: POSTGRES_DB
+              value: ledgerflow
+          ports:
+            - containerPort: 5432
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "ledgerflow", "-d", "ledgerflow"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+            - name: init
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: ledgerflow-postgres
+        - name: init
+          configMap:
+            name: ledgerflow-postgres-init
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: ledgerflow
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432

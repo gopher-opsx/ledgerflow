@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ledgerflow.local/schemas/transaction-v2-breaking.json",
+  "title": "LedgerFlowTransaction",
+  "type": "object",
+  "required": [
+    "event_id",
+    "transaction_id",
+    "account_id",
+    "type",
+    "amount_minor_units",
+    "currency",
+    "destination_account",
+    "timestamp"
+  ],
+  "properties": {
+    "event_id": {"type": "string", "minLength": 1},
+    "transaction_id": {"type": "string", "minLength": 1},
+    "account_id": {"type": "string", "minLength": 1},
+    "type": {"const": "TRANSFER"},
+    "amount_minor_units": {"type": "integer", "minimum": 1},
+    "currency": {"type": "string", "minLength": 3, "maxLength": 3},
+    "destination_account": {"type": "string", "minLength": 1},
+    "timestamp": {"type": "string", "format": "date-time"}
+  },
+  "additionalProperties": false
+}

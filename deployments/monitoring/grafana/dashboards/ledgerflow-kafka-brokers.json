@@ -1,0 +1,216 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "graphTooltip": 1,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Brokers Up",
+      "id": 1,
+      "targets": [
+        {
+          "expr": "sum(up{job=\"kafka-brokers\"})",
+          "legendFormat": "brokers"
+        }
+      ],
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Under-Replicated Partitions",
+      "id": 2,
+      "targets": [
+        {
+          "expr": "sum(kafka_server_replicamanager_value{name=\"UnderReplicatedPartitions\"})",
+          "legendFormat": "URP"
+        }
+      ],
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Under-Min-ISR Partitions",
+      "id": 3,
+      "targets": [
+        {
+          "expr": "sum(kafka_server_replicamanager_value{name=\"UnderMinIsrPartitionCount\"})",
+          "legendFormat": "under-min-ISR"
+        }
+      ],
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      }
+    },
+    {
+      "type": "stat",
+      "title": "At-Min-ISR Partitions",
+      "id": 4,
+      "targets": [
+        {
+          "expr": "sum(kafka_server_replicamanager_value{name=\"AtMinIsrPartitionCount\"})",
+          "legendFormat": "at-min-ISR"
+        }
+      ],
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Messages In/sec",
+      "id": 5,
+      "targets": [
+        {
+          "expr": "kafka_server_brokertopicmetrics_oneminuterate{name=\"MessagesInPerSec\"}",
+          "legendFormat": "{{instance}}"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 5
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Bytes In/sec",
+      "id": 6,
+      "targets": [
+        {
+          "expr": "kafka_server_brokertopicmetrics_oneminuterate{name=\"BytesInPerSec\"}",
+          "legendFormat": "{{instance}}"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 5
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Bytes Out/sec",
+      "id": 7,
+      "targets": [
+        {
+          "expr": "kafka_server_brokertopicmetrics_oneminuterate{name=\"BytesOutPerSec\"}",
+          "legendFormat": "{{instance}}"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 5
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "ISR Shrinks / Expands per sec",
+      "id": 8,
+      "targets": [
+        {
+          "expr": "kafka_server_replicamanager_oneminuterate{name=\"IsrShrinksPerSec\"}",
+          "legendFormat": "shrink {{instance}}"
+        },
+        {
+          "expr": "kafka_server_replicamanager_oneminuterate{name=\"IsrExpandsPerSec\"}",
+          "legendFormat": "expand {{instance}}"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 13
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Request Queue Size",
+      "id": 9,
+      "targets": [
+        {
+          "expr": "kafka_network_requestchannel_value{name=\"RequestQueueSize\"}",
+          "legendFormat": "{{instance}}"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 13
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Leader Count by Broker",
+      "id": 10,
+      "targets": [
+        {
+          "expr": "kafka_server_replicamanager_value{name=\"LeaderCount\"}",
+          "legendFormat": "{{instance}}"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 21
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Partition Count by Broker",
+      "id": 11,
+      "targets": [
+        {
+          "expr": "kafka_server_replicamanager_value{name=\"PartitionCount\"}",
+          "legendFormat": "{{instance}}"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 21
+      }
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": [
+    "ledgerflow",
+    "kafka"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "LedgerFlow Kafka Brokers",
+  "uid": "ledgerflow-kafka-brokers",
+  "version": 1
+}

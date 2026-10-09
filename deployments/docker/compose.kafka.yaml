@@ -43,6 +43,14 @@ services:
       interval: 5s
       timeout: 3s
       retries: 20
+    command:
+      - postgres
+      - -c
+      - wal_level=logical
+      - -c
+      - max_replication_slots=10
+      - -c
+      - max_wal_senders=10
 
 
   controller-1:
@@ -239,9 +247,12 @@ services:
     ports:
     - 8080:8080
     depends_on:
-    - broker-1
-    - broker-2
-    - broker-3
+      broker-1:
+        condition: service_healthy
+      broker-2:
+        condition: service_healthy
+      broker-3:
+        condition: service_healthy
   ledger-service:
     build:
       context: ../..
@@ -252,12 +263,17 @@ services:
     environment:
       KAFKA_BROKERS: broker-1:19092,broker-2:19092,broker-3:19092
       KAFKA_TRANSACTION_TOPIC: ledgerflow.transactions
+      KAFKA_DLT_TOPIC: ledgerflow.transactions.dlt
       DATABASE_URL: postgres://ledgerflow:ledgerflow@postgres:5432/ledgerflow?sslmode=disable
     depends_on:
-    - broker-1
-    - broker-2
-    - broker-3
-    - postgres
+      broker-1:
+        condition: service_healthy
+      broker-2:
+        condition: service_healthy
+      broker-3:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
   fraud-service:
     build:
       context: ../..
@@ -270,9 +286,12 @@ services:
       KAFKA_TRANSACTION_TOPIC: ledgerflow.transactions
       KAFKA_FRAUD_RESULTS_TOPIC: ledgerflow.fraud-results
     depends_on:
-    - broker-1
-    - broker-2
-    - broker-3
+      broker-1:
+        condition: service_healthy
+      broker-2:
+        condition: service_healthy
+      broker-3:
+        condition: service_healthy
   notification-service:
     build:
       context: ../..
@@ -285,9 +304,12 @@ services:
       KAFKA_TRANSACTION_TOPIC: ledgerflow.transactions
       KAFKA_NOTIFICATIONS_TOPIC: ledgerflow.notifications
     depends_on:
-    - broker-1
-    - broker-2
-    - broker-3
+      broker-1:
+        condition: service_healthy
+      broker-2:
+        condition: service_healthy
+      broker-3:
+        condition: service_healthy
   jmx-exporter-broker-1:
     image: dhi.io/jmx-exporter:1
     container_name: ledgerflow-jmx-exporter-broker-1
@@ -300,7 +322,8 @@ services:
     - ../monitoring/jmx/broker-1.yml:/etc/jmx/kafka.yml:ro
     environment: {}
     depends_on:
-    - broker-1
+      broker-1:
+        condition: service_healthy
   jmx-exporter-broker-2:
     image: dhi.io/jmx-exporter:1
     container_name: ledgerflow-jmx-exporter-broker-2
@@ -312,7 +335,8 @@ services:
     volumes:
     - ../monitoring/jmx/broker-2.yml:/etc/jmx/kafka.yml:ro
     depends_on:
-    - broker-2
+      broker-2:
+        condition: service_healthy
   jmx-exporter-broker-3:
     image: dhi.io/jmx-exporter:1
     container_name: ledgerflow-jmx-exporter-broker-3
@@ -324,7 +348,8 @@ services:
     volumes:
     - ../monitoring/jmx/broker-3.yml:/etc/jmx/kafka.yml:ro
     depends_on:
-    - broker-3
+      broker-3:
+        condition: service_healthy
   prometheus:
     image: prom/prometheus:v3.6.0
     container_name: ledgerflow-prometheus

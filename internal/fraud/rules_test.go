@@ -1,3 +1,6 @@
+// Tests the fraud package with controlled inputs and expected outcomes.
+// These checks cover local behavior; they do not validate a deployed Kafka or PostgreSQL system.
+
 package fraud
 
 import (

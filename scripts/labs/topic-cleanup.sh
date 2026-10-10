@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Creates and populates separate retention and compaction demonstration topics. Cleanup happens asynchronously.
+# Run from the repository root in Bash with the required lab services and tools available.
 set -euo pipefail
 
 BROKER_CONTAINER="${BROKER_CONTAINER:-ledgerflow-broker-1}"

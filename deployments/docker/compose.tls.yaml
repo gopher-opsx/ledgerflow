@@ -1,4 +1,9 @@
+# Overlay replacing broker data listeners with SSL and mounting generated lab keystores.
+# Merge with the base lab; clients and healthchecks also need SSL settings before this path is recording-ready.
+# Paths resolve relative to this Compose file; credentials are isolated-lab defaults.
+
 services:
+  # Defines this service or named volume in the merged Compose project.
   broker-1:
     environment:
       KAFKA_LISTENERS: SSL://:19092,SSL_HOST://:9092
@@ -14,6 +19,7 @@ services:
       KAFKA_SSL_CLIENT_AUTH: none
     volumes:
       - ../../security/tls:/etc/ledgerflow/security:ro
+  # Defines this service or named volume in the merged Compose project.
   broker-2:
     environment:
       KAFKA_LISTENERS: SSL://:19092,SSL_HOST://:9092
@@ -29,6 +35,7 @@ services:
       KAFKA_SSL_CLIENT_AUTH: none
     volumes:
       - ../../security/tls:/etc/ledgerflow/security:ro
+  # Defines this service or named volume in the merged Compose project.
   broker-3:
     environment:
       KAFKA_LISTENERS: SSL://:19092,SSL_HOST://:9092

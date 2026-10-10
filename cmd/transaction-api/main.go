@@ -1,3 +1,6 @@
+// Wires the transaction-api process: configuration, dependencies, and graceful shutdown.
+// Read this entry point to see how the reusable internal packages form a running lab service.
+
 package main
 
 import (

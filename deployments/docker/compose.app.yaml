@@ -1,4 +1,9 @@
+# Small application definition with PostgreSQL and the Transaction API.
+# It is not the complete banking pipeline; the API needs reachable Kafka broker configuration.
+# Paths resolve relative to this Compose file; credentials are isolated-lab defaults.
+
 services:
+  # Defines this service or named volume in the merged Compose project.
   postgres:
     image: postgres:16-alpine
     environment:
@@ -16,6 +21,7 @@ services:
       timeout: 3s
       retries: 20
 
+  # Defines this service or named volume in the merged Compose project.
   transaction-api:
     build:
       context: ../..
@@ -29,4 +35,5 @@ services:
       disable: true
 
 volumes:
+  # Defines this service or named volume in the merged Compose project.
   ledgerflow-postgres:

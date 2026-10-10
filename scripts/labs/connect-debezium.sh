@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Registers the PostgreSQL CDC connector with Kafka Connect. Requires the integration services to be running.
+# Run from the repository root in Bash with the required lab services and tools available.
 set -euo pipefail
 
 CONNECT_URL="${CONNECT_URL:-http://localhost:8083}"

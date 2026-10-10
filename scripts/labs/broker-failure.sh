@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Stops a broker to demonstrate replication recovery. Run only in the isolated course lab.
+# Run from the repository root in Bash with the required lab services and tools available.
 set -euo pipefail
 
 COMPOSE_FILE="${COMPOSE_FILE:-deployments/docker/compose.kafka.yaml}"

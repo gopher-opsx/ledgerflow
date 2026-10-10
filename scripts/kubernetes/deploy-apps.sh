@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Applies the namespace, PostgreSQL, and application manifests to the current Kubernetes context.
+# Run from the repository root in Bash with the required lab services and tools available.
 set -euo pipefail
 
 kubectl apply -f deployments/kubernetes/base/postgres.yaml

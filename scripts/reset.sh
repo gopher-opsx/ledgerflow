@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Deletes Compose persistent volumes and restarts the lab. This destroys existing Kafka and PostgreSQL lab data.
+# Run from the repository root in Bash with the required lab services and tools available.
 
 set -euo pipefail
 

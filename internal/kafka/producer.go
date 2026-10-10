@@ -1,3 +1,6 @@
+// Serializes transaction events and publishes them synchronously with acknowledgements from the ISR.
+// Account IDs are record keys; ordering applies within a partition rather than across the whole topic.
+
 package kafka
 
 import (

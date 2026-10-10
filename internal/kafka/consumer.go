@@ -1,3 +1,6 @@
+// Runs the ledger consumer with explicit commits, database retries, and dead-letter publication.
+// The normal path commits after persistence or successful DLT publication; see the review for failure-path limitations.
+
 package kafka
 
 import (

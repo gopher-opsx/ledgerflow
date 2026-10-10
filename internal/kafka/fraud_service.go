@@ -1,3 +1,6 @@
+// Consumes transaction events, evaluates the lab fraud rules, and publishes fraud outcomes.
+// Output publication and input-offset commits are separate operations, so replay can duplicate outputs.
+
 package kafka
 
 import (

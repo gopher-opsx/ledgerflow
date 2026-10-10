@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Submits the same event twice and checks that only one transaction and two ledger entries persist.
+# Run from the repository root in Bash with the required lab services and tools available.
 set -euo pipefail
 
 API_URL="${API_URL:-http://localhost:8080}"

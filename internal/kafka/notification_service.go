@@ -1,3 +1,6 @@
+// Consumes transactions and publishes simulated notification records.
+// This service does not send email; output publication and offset commits are separate operations.
+
 package kafka
 
 import (

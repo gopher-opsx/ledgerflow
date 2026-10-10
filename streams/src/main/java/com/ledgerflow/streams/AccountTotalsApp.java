@@ -1,3 +1,6 @@
+// Aggregates transaction amounts by Kafka key into account totals.
+// Streams exactly-once processing applies to this Kafka pipeline, not external ledger writes.
+
 package com.ledgerflow.streams;
 
 import com.fasterxml.jackson.databind.JsonNode;

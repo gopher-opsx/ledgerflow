@@ -1,3 +1,6 @@
+// Defines the fraud-result event contract produced by the fraud consumer.
+// Keep these fields aligned with topic readers and fixture expectations.
+
 package events
 
 import "time"

@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Removes two brokers and compares write behavior before and after recovery. A non-202 response alone does not establish the Kafka failure cause.
+# Run from the repository root in Bash with the required lab services and tools available.
 set -euo pipefail
 
 COMPOSE_FILE="${COMPOSE_FILE:-deployments/docker/compose.kafka.yaml}"

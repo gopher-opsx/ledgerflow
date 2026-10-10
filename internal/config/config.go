@@ -1,3 +1,6 @@
+// Loads Transaction API settings from environment variables with local-lab defaults.
+// Host clients use published localhost ports; containers must supply internal broker addresses.
+
 package config
 
 import (

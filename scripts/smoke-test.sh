@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Submits a unique synthetic transaction and checks PostgreSQL, fraud, and notification outputs.
+# Run from the repository root in Bash with the required lab services and tools available.
 
 set -euo pipefail
 

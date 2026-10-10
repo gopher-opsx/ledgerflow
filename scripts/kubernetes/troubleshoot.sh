@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Collects Kubernetes workload evidence for the lab. Review the selected context before running.
+# Run from the repository root in Bash with the required lab services and tools available.
 set -euo pipefail
 
 kubectl get nodes

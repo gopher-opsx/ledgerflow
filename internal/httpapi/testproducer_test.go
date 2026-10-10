@@ -1,3 +1,6 @@
+// Provides an in-memory producer double for HTTP endpoint tests.
+// Capturing the event and injecting errors tests API behavior without a running Kafka cluster.
+
 package httpapi
 
 import (

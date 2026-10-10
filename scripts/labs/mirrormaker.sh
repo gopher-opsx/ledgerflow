@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Starts the secondary cluster and checks that the mirrored transaction topic appears. Topic existence alone does not prove record replication.
+# Run from the repository root in Bash with the required lab services and tools available.
 set -euo pipefail
 
 COMPOSE=(docker compose -f deployments/docker/compose.kafka.yaml -f deployments/docker/compose.mirrormaker.yaml)

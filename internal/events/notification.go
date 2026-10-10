@@ -1,3 +1,6 @@
+// Defines the simulated notification event contract.
+// A notification record represents a lab outcome; it is not proof of an email delivery.
+
 package events
 
 import "time"

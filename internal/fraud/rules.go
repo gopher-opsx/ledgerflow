@@ -1,3 +1,6 @@
+// Applies deterministic fraud rules to synthetic transactions.
+// The simple decisions make expected lab outputs repeatable without an external fraud system.
+
 package fraud
 
 import (

@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Adds topic and consumer-group permissions for the lab principal using the mounted admin credentials.
+# Run from the repository root in Bash with the required lab services and tools available.
 set -euo pipefail
 
 BROKER=ledgerflow-broker-1

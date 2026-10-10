@@ -1,3 +1,6 @@
+// Persists a transaction, its debit and credit entries, and its processed-event marker together.
+// The database transaction prevents partial ledger writes; an existing event ID is ignored.
+
 package database
 
 import (

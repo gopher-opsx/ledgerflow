@@ -1,3 +1,6 @@
+// Builds a simulated notification from a transaction with a derived event ID and current timestamp.
+// The SENT status is a teaching fixture, not confirmation from an external messaging provider.
+
 package notification
 
 import (

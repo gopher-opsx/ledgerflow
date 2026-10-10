@@ -1,3 +1,6 @@
+// Defines the JSON transaction contract shared by the API and Kafka consumers.
+// Normalization and validation keep synthetic lab requests consistent before publication.
+
 package events
 
 import (

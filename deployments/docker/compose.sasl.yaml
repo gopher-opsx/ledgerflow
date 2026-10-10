@@ -1,4 +1,9 @@
+# Overlay adding SASL/PLAIN over SSL and broker ACL authorization using lab credentials.
+# Client settings, healthchecks, and controller authorization must be rehearsed before recording.
+# Paths resolve relative to this Compose file; credentials are isolated-lab defaults.
+
 services:
+  # Defines this service or named volume in the merged Compose project.
   broker-1:
     environment: &sasl_env
       KAFKA_LISTENERS: SASL_SSL://:19092,SASL_SSL_HOST://:9092
@@ -20,6 +25,7 @@ services:
     volumes:
       - ../../security/tls:/etc/ledgerflow/security:ro
       - ../../security/sasl:/etc/ledgerflow/sasl:ro
+  # Defines this service or named volume in the merged Compose project.
   broker-2:
     environment:
       <<: *sasl_env
@@ -28,6 +34,7 @@ services:
     volumes:
       - ../../security/tls:/etc/ledgerflow/security:ro
       - ../../security/sasl:/etc/ledgerflow/sasl:ro
+  # Defines this service or named volume in the merged Compose project.
   broker-3:
     environment:
       <<: *sasl_env

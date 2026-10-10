@@ -1,4 +1,9 @@
+# Overlay for Connect, Debezium infrastructure, schema registry, and Kafka Streams.
+# Merge with compose.kafka.yaml so referenced brokers and PostgreSQL exist.
+# Paths resolve relative to this Compose file; credentials are isolated-lab defaults.
+
 services:
+  # Defines this service or named volume in the merged Compose project.
   kafka-connect:
     image: quay.io/debezium/connect:3.7
     container_name: ledgerflow-kafka-connect
@@ -23,12 +28,14 @@ services:
       postgres:
         condition: service_healthy
 
+  # Defines this service or named volume in the merged Compose project.
   schema-registry:
     image: apicurio/apicurio-registry:3.3.3
     container_name: ledgerflow-schema-registry
     ports:
       - "8085:8080"
 
+  # Defines this service or named volume in the merged Compose project.
   schema-registry-ui:
     image: apicurio/apicurio-registry-ui:3.3.3
     container_name: ledgerflow-schema-registry-ui
@@ -39,6 +46,7 @@ services:
     depends_on:
       - schema-registry
 
+  # Defines this service or named volume in the merged Compose project.
   streams-service:
     build:
       context: ../..

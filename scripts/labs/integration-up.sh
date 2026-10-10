@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Starts Connect, registry, and Streams by merging the integration overlay with the base Compose file.
+# Run from the repository root in Bash with the required lab services and tools available.
 set -euo pipefail
 
 docker compose \

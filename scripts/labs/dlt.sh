@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Publishes malformed JSON and looks for the same payload on the ledger dead-letter topic.
+# Run from the repository root in Bash with the required lab services and tools available.
 set -euo pipefail
 
 BROKER_CONTAINER="${BROKER_CONTAINER:-ledgerflow-broker-1}"

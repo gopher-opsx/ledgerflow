@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Installs the Strimzi operator and Kafka resources for the Kubernetes lab.
+# Run from the repository root in Bash with the required lab services and tools available.
 set -euo pipefail
 
 kubectl apply -f deployments/kubernetes/base/namespace.yaml

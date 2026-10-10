@@ -1,3 +1,6 @@
+// Connects health, metrics, and transaction HTTP endpoints to the producer interface.
+// A successful submission acknowledges publication, while downstream persistence is verified separately.
+
 package httpapi
 
 import (

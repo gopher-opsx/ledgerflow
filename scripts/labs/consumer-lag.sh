@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Pauses the ledger consumer, creates a backlog, and observes recovery after restarting it.
+# Run from the repository root in Bash with the required lab services and tools available.
 set -euo pipefail
 
 COMPOSE_FILE="${COMPOSE_FILE:-deployments/docker/compose.kafka.yaml}"

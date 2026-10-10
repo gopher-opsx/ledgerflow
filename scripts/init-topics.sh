@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Creates the banking topics used by the services. Existing topics are retained by --if-not-exists.
+# Run from the repository root in Bash with the required lab services and tools available.
 set -euo pipefail
 
 BROKER_CONTAINER="${BROKER_CONTAINER:-ledgerflow-broker-1}"

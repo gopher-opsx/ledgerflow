@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Replaces generated lab certificate files and builds broker keystores and a shared truststore. Requires OpenSSL and keytool.
+# Run from the repository root in Bash with the required lab services and tools available.
 set -euo pipefail
 
 OUT="security/tls"

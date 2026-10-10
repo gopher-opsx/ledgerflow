@@ -1,3 +1,6 @@
+// Owns the PostgreSQL connection pool used by the ledger consumer.
+// Startup pings the database so connection errors surface before event processing begins.
+
 package database
 
 import (

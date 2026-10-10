@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Lists groups and describes offsets, lag, and the selected topic using standard Kafka tools.
+# Run from the repository root in Bash with the required lab services and tools available.
 set -euo pipefail
 
 BROKER_CONTAINER="${BROKER_CONTAINER:-ledgerflow-broker-1}"

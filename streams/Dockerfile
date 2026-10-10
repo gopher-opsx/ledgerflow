@@ -1,3 +1,6 @@
+# Builds the course service image using the stages below.
+# Build from the repository root so module files and source paths are available.
+
 FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /src
 COPY streams/pom.xml ./pom.xml

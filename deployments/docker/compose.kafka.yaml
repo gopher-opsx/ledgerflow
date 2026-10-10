@@ -1,6 +1,11 @@
+# Base local lab: three dedicated KRaft controllers, three brokers, applications, PostgreSQL, and monitoring.
+# Container clients use broker-N:19092; host clients use localhost ports 29092, 39092, and 49092.
+# Paths resolve relative to this Compose file; credentials are isolated-lab defaults.
+
 name: ledgerflow
 services:
 
+  # Defines this service or named volume in the merged Compose project.
   kafka-volume-init:
     image: busybox:1.36
     container_name: ledgerflow-kafka-volume-init
@@ -24,6 +29,7 @@ services:
       - ledgerflow-broker-3:/broker-3
     restart: "no"
 
+  # Defines this service or named volume in the merged Compose project.
   postgres:
     image: postgres:16-alpine
     container_name: ledgerflow-postgres
@@ -53,6 +59,7 @@ services:
       - max_wal_senders=10
 
 
+  # Defines this service or named volume in the merged Compose project.
   controller-1:
     image: apache/kafka:4.3.1
     container_name: ledgerflow-controller-1
@@ -74,6 +81,7 @@ services:
         condition: service_completed_successfully
 
 
+  # Defines this service or named volume in the merged Compose project.
   controller-2:
     image: apache/kafka:4.3.1
     container_name: ledgerflow-controller-2
@@ -94,6 +102,7 @@ services:
       kafka-volume-init:
         condition: service_completed_successfully
 
+  # Defines this service or named volume in the merged Compose project.
   controller-3:
     image: apache/kafka:4.3.1
     container_name: ledgerflow-controller-3
@@ -114,6 +123,7 @@ services:
       kafka-volume-init:
         condition: service_completed_successfully
 
+  # Defines this service or named volume in the merged Compose project.
   broker-1:
     image: apache/kafka:4.3.1
     container_name: ledgerflow-broker-1
@@ -153,6 +163,7 @@ services:
       timeout: 5s
       retries: 12
       start_period: 20s
+  # Defines this service or named volume in the merged Compose project.
   broker-2:
     image: apache/kafka:4.3.1
     container_name: ledgerflow-broker-2
@@ -193,6 +204,7 @@ services:
       retries: 12
       start_period: 20s
 
+  # Defines this service or named volume in the merged Compose project.
   broker-3:
     image: apache/kafka:4.3.1
     container_name: ledgerflow-broker-3
@@ -233,6 +245,7 @@ services:
       timeout: 5s
       retries: 12
       start_period: 20s
+  # Defines this service or named volume in the merged Compose project.
   transaction-api:
     build:
       context: ../..
@@ -253,6 +266,7 @@ services:
         condition: service_healthy
       broker-3:
         condition: service_healthy
+  # Defines this service or named volume in the merged Compose project.
   ledger-service:
     build:
       context: ../..
@@ -274,6 +288,7 @@ services:
         condition: service_healthy
       postgres:
         condition: service_healthy
+  # Defines this service or named volume in the merged Compose project.
   fraud-service:
     build:
       context: ../..
@@ -292,6 +307,7 @@ services:
         condition: service_healthy
       broker-3:
         condition: service_healthy
+  # Defines this service or named volume in the merged Compose project.
   notification-service:
     build:
       context: ../..
@@ -310,6 +326,7 @@ services:
         condition: service_healthy
       broker-3:
         condition: service_healthy
+  # Defines this service or named volume in the merged Compose project.
   jmx-exporter-broker-1:
     image: dhi.io/jmx-exporter:1
     container_name: ledgerflow-jmx-exporter-broker-1
@@ -324,6 +341,7 @@ services:
     depends_on:
       broker-1:
         condition: service_healthy
+  # Defines this service or named volume in the merged Compose project.
   jmx-exporter-broker-2:
     image: dhi.io/jmx-exporter:1
     container_name: ledgerflow-jmx-exporter-broker-2
@@ -337,6 +355,7 @@ services:
     depends_on:
       broker-2:
         condition: service_healthy
+  # Defines this service or named volume in the merged Compose project.
   jmx-exporter-broker-3:
     image: dhi.io/jmx-exporter:1
     container_name: ledgerflow-jmx-exporter-broker-3
@@ -350,6 +369,7 @@ services:
     depends_on:
       broker-3:
         condition: service_healthy
+  # Defines this service or named volume in the merged Compose project.
   prometheus:
     image: prom/prometheus:v3.6.0
     container_name: ledgerflow-prometheus
@@ -365,6 +385,7 @@ services:
     - jmx-exporter-broker-2
     - jmx-exporter-broker-3
     - transaction-api
+  # Defines this service or named volume in the merged Compose project.
   grafana:
     image: grafana/grafana-enterprise
     container_name: ledgerflow-grafana
@@ -379,6 +400,7 @@ services:
     - ledgerflow-grafana:/var/lib/grafana
     depends_on:
     - prometheus
+  # Defines this service or named volume in the merged Compose project.
   alertmanager:
     image: prom/alertmanager:v0.34.1
     container_name: ledgerflow-alertmanager
@@ -388,6 +410,7 @@ services:
     - ../monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
     ports:
     - 9093:9093
+  # Defines this service or named volume in the merged Compose project.
   kafka-exporter:
     image: danielqsj/kafka-exporter:v1.9.0
     container_name: ledgerflow-kafka-exporter
@@ -409,10 +432,16 @@ volumes:
   ledgerflow-postgres: null
   ledgerflow-grafana: null
 
+  # Defines this service or named volume in the merged Compose project.
   ledgerflow-controller-1:
+  # Defines this service or named volume in the merged Compose project.
   ledgerflow-controller-2:
+  # Defines this service or named volume in the merged Compose project.
   ledgerflow-controller-3:
 
+  # Defines this service or named volume in the merged Compose project.
   ledgerflow-broker-1:
+  # Defines this service or named volume in the merged Compose project.
   ledgerflow-broker-2:
+  # Defines this service or named volume in the merged Compose project.
   ledgerflow-broker-3:

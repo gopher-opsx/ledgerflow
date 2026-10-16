@@ -11,7 +11,7 @@
       "id": 1,
       "targets": [
         {
-          "expr": "sum(up{job=\"kafka-brokers\"})",
+          "expr": "kafka_brokers",
           "legendFormat": "brokers"
         }
       ],

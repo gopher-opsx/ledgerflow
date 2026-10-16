@@ -24,12 +24,12 @@
     },
     {
       "type": "stat",
-      "title": "Cluster Under-Replicated Partitions",
+      "title": "Transaction Topic Partitions",
       "id": 2,
       "targets": [
         {
-          "expr": "sum(kafka_server_replicamanager_value{name=\"UnderReplicatedPartitions\"})",
-          "legendFormat": "URP"
+          "expr": "sum(kafka_topic_partitions{topic=\"ledgerflow.transactions\"})",
+          "legendFormat": "partitions"
         }
       ],
       "gridPos": {
@@ -41,12 +41,12 @@
     },
     {
       "type": "stat",
-      "title": "Cluster Partitions Below Min ISR",
+      "title": "Transaction Topic Under-Replicated",
       "id": 3,
       "targets": [
         {
-          "expr": "sum(kafka_server_replicamanager_value{name=\"UnderMinIsrPartitionCount\"})",
-          "legendFormat": "under-min-ISR"
+          "expr": "sum(kafka_topic_partition_under_replicated_partition{topic=\"ledgerflow.transactions\"})",
+          "legendFormat": "under-replicated"
         }
       ],
       "gridPos": {
@@ -58,12 +58,12 @@
     },
     {
       "type": "stat",
-      "title": "Cluster Partitions At Min ISR",
+      "title": "Transaction Topic Healthy Partitions",
       "id": 4,
       "targets": [
         {
-          "expr": "sum(kafka_server_replicamanager_value{name=\"AtMinIsrPartitionCount\"})",
-          "legendFormat": "at-min-ISR"
+          "expr": "sum(kafka_topic_partitions{topic=\"ledgerflow.transactions\"}) - sum(kafka_topic_partition_under_replicated_partition{topic=\"ledgerflow.transactions\"})",
+          "legendFormat": "healthy"
         }
       ],
       "gridPos": {
@@ -212,5 +212,5 @@
   "timezone": "browser",
   "title": "LedgerFlow Kafka Brokers",
   "uid": "ledgerflow-kafka-brokers",
-  "version": 1
+  "version": 2
 }

@@ -24,7 +24,7 @@
     },
     {
       "type": "stat",
-      "title": "Under-Replicated Partitions",
+      "title": "Cluster Under-Replicated Partitions",
       "id": 2,
       "targets": [
         {
@@ -41,7 +41,7 @@
     },
     {
       "type": "stat",
-      "title": "Under-Min-ISR Partitions",
+      "title": "Cluster Partitions Below Min ISR",
       "id": 3,
       "targets": [
         {
@@ -58,7 +58,7 @@
     },
     {
       "type": "stat",
-      "title": "At-Min-ISR Partitions",
+      "title": "Cluster Partitions At Min ISR",
       "id": 4,
       "targets": [
         {

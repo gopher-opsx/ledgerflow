@@ -48,8 +48,22 @@ public final class AccountTotalsApp {
                 .to(outputTopic, Produced.with(Serdes.String(), Serdes.String()));
 
         KafkaStreams streams = new KafkaStreams(builder.build(), props);
+
+        // Close Kafka Streams cleanly when Docker stops the container.
         Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
+
+        // Start consuming input events and publishing calculated totals.
         streams.start();
+
+        // KafkaStreams.start() returns immediately. Keep this container's main
+        // thread alive, so Docker does not consider the service finished.
+        // The Docker stop signal invokes the shutdown hook above.
+        try {
+            Thread.currentThread().join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            streams.close();
+        }
     }
 
     private static BigDecimal toAmount(String json) {

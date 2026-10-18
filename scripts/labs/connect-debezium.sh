@@ -1,102 +1,118 @@
 #!/usr/bin/env bash
-# Register or update the LedgerFlow PostgreSQL CDC connector through Kafka Connect.
-# Run from the LedgerFlow repository root after Kafka, PostgreSQL, and Kafka Connect are started.
-# The worker can accept a connector before its task is ready, so verify RUNNING status with retries.
+# Register the LedgerFlow PostgreSQL CDC connector with Kafka Connect.
+#
+# Student-friendly requirements: Bash and curl only (no Python or jq).
+# Run from the LedgerFlow repository root:
+#   make connect-debezium
+#
+# Safe to rerun: when the connector already exists, leave its configuration
+# unchanged and verify that the connector and its task are running.
+# To apply changed connector settings, manage the update separately via the
+# Kafka Connect REST API; this helper deliberately does not replace them.
 set -euo pipefail
 
 CONNECT_URL="${CONNECT_URL:-http://localhost:8083}"
 CONFIG_FILE="${CONFIG_FILE:-deployments/integration/connect/postgres-connector.json}"
 CONNECTOR_NAME="ledgerflow-postgres-cdc"
-STATUS_URL="${CONNECT_URL}/connectors/${CONNECTOR_NAME}/status"
 
-# Stop early if the local connector JSON is missing or malformed.
+# Keep network operations bounded so an unreachable API cannot hang forever.
+CURL_OPTS=(--silent --show-error --connect-timeout 3 --max-time 10)
+
 if [[ ! -f "$CONFIG_FILE" ]]; then
-    echo "✗ Missing connector configuration: $CONFIG_FILE" >&2
-    exit 1
+  echo "✗ Connector configuration not found: $CONFIG_FILE" >&2
+  echo "  Run this command from the LedgerFlow repository root." >&2
+  exit 1
 fi
-python3 - "$CONFIG_FILE" <<'PY'
-import json, sys
-with open(sys.argv[1], encoding="utf-8") as file:
-    document = json.load(file)
-if not isinstance(document.get("config"), dict) or document.get("name") != "ledgerflow-postgres-cdc":
-    sys.exit("Connector JSON must contain the expected name and config object")
-PY
 
 wait_for_connect() {
-    echo "Waiting for Kafka Connect..."
-    for attempt in {1..60}; do
-        if curl --fail --silent --show-error --max-time 5 \
-            "${CONNECT_URL}/connectors" >/dev/null 2>&1; then
-            echo "✓ Kafka Connect REST API is ready"
-            return 0
-        fi
-        sleep 2
-    done
-    echo "✗ Kafka Connect REST API did not become ready" >&2
-    return 1
+  echo "Waiting for Kafka Connect..."
+  local attempt
+  for ((attempt=1; attempt<=60; attempt++)); do
+    if curl "${CURL_OPTS[@]}" --fail "$CONNECT_URL/connectors" >/dev/null 2>&1; then
+      echo "✓ Kafka Connect REST API is ready"
+      return 0
+    fi
+    sleep 2
+  done
+  echo "✗ Kafka Connect REST API did not become ready at $CONNECT_URL" >&2
+  return 1
 }
 
-wait_for_connector() {
-    echo "Waiting for Debezium connector and task to reach RUNNING..."
-    local response state
-    for attempt in {1..60}; do
-        # A freshly registered connector may briefly return an HTTP error while Connect rebalances.
-        if response="$(curl --fail --silent --show-error --max-time 5 "$STATUS_URL" 2>/dev/null)"; then
-            state="$(printf '%s' "$response" | python3 -c '
-import json, sys
-try:
-    info = json.load(sys.stdin)
-    connector = info.get("connector", {}).get("state")
-    tasks = info.get("tasks", [])
-    states = [task.get("state") for task in tasks]
-    if connector == "FAILED" or "FAILED" in states:
-        print("FAILED")
-    elif connector == "RUNNING" and states and all(s == "RUNNING" for s in states):
-        print("RUNNING")
-    else:
-        print("PENDING")
-except (ValueError, TypeError, AttributeError):
-    print("PENDING")
-')"
-            case "$state" in
-                RUNNING)
-                    echo "✓ Debezium connector and task are RUNNING"
-                    printf '%s\n' "$response"
-                    return 0 ;;
-                FAILED)
-                    echo "✗ Debezium connector or task has FAILED:" >&2
-                    printf '%s\n' "$response" >&2
-                    return 1 ;;
-            esac
-        fi
-        sleep 2
-    done
-    echo "✗ Timed out waiting for Debezium connector and task to reach RUNNING" >&2
-    echo "Inspect status: curl -i '$STATUS_URL'" >&2
-    return 1
+# Capture HTTP codes separately from bodies, so 404 (not yet registered)
+# does not get confused with network errors or Connect rebalances.
+http_code() {
+  curl "${CURL_OPTS[@]}" --output /dev/null --write-out '%{http_code}' "$1"
 }
 
 wait_for_connect
 
-if curl --fail --silent --max-time 5 \
-    "${CONNECT_URL}/connectors/${CONNECTOR_NAME}" >/dev/null 2>&1; then
-    echo "Updating ${CONNECTOR_NAME}..."
-    # PUT /config expects the inner config object, not the outer {name,config} wrapper.
-    python3 - "$CONFIG_FILE" <<'PY' | curl --fail --silent --show-error \
-        -X PUT -H 'Content-Type: application/json' --data-binary @- \
-        "${CONNECT_URL}/connectors/${CONNECTOR_NAME}/config" >/dev/null
-import json, sys
-with open(sys.argv[1], encoding="utf-8") as file:
-    print(json.dumps(json.load(file)["config"]))
-PY
-else
-    echo "Creating ${CONNECTOR_NAME}..."
-    # POST /connectors expects the full JSON document with both name and config.
-    curl --fail --silent --show-error -X POST \
-        -H 'Content-Type: application/json' \
-        --data-binary "@${CONFIG_FILE}" \
-        "${CONNECT_URL}/connectors" >/dev/null
-fi
+connector_url="$CONNECT_URL/connectors/$CONNECTOR_NAME"
+code="$(http_code "$connector_url")" || {
+  echo "✗ Could not check whether the connector exists." >&2
+  exit 1
+}
 
-echo "✓ Debezium configuration submitted"
-wait_for_connector
+case "$code" in
+  200)
+    echo "✓ $CONNECTOR_NAME already exists; leaving its configuration unchanged"
+    ;;
+  404)
+    echo "Creating $CONNECTOR_NAME..."
+    # Kafka Connect POST /connectors accepts the complete JSON object with
+    # both `name` and `config` from postgres-connector.json.
+    # Preserve the API response if registration fails for troubleshooting.
+    if ! curl "${CURL_OPTS[@]}" --fail-with-body \
+      -X POST -H 'Content-Type: application/json' \
+      --data-binary "@$CONFIG_FILE" \
+      "$CONNECT_URL/connectors" >/dev/null; then
+      echo "✗ Kafka Connect rejected the connector registration." >&2
+      exit 1
+    fi
+    echo "✓ Debezium connector configuration submitted"
+    ;;
+  *)
+    echo "✗ Unexpected HTTP $code when checking connector registration." >&2
+    exit 1
+    ;;
+esac
+
+echo "Waiting for Debezium connector and task to reach RUNNING..."
+# Kafka Connect can briefly return 404 or 409 while assigning tasks.
+# We wait for the stable RUNNING state instead of declaring success early.
+for ((attempt=1; attempt<=60; attempt++)); do
+  status="$(curl "${CURL_OPTS[@]}" --fail "$connector_url/status" 2>/dev/null)" || {
+    sleep 2
+    continue
+  }
+
+  # JSON is small and generated by Kafka Connect. These patterns match the
+  # connector's and single configured task's state, regardless of whitespace.
+  # They avoid extra dependencies on Python/jq for the local training lab.
+  compact="${status//[[:space:]]/}"
+  connector_part="${compact#*\"connector\":}"
+  task_part="${compact#*\"tasks\":}"
+
+  if [[ "$connector_part" == "$compact" || "$task_part" == "$compact" ]]; then
+    echo "✗ Unexpected connector status response: $status" >&2
+    exit 1
+  fi
+
+  connector_state="${connector_part%%\"tasks\":*}"
+  task_state="$task_part"
+
+  if [[ "$connector_state" == *'"state":"FAILED"'* || "$task_state" == *'"state":"FAILED"'* ]]; then
+    echo "✗ Debezium connector or task is FAILED. Status:" >&2
+    echo "$status" >&2
+    exit 1
+  fi
+
+  if [[ "$connector_state" == *'"state":"RUNNING"'* && "$task_state" == *'"state":"RUNNING"'* ]]; then
+    echo "✓ Debezium connector and task are RUNNING"
+    exit 0
+  fi
+  sleep 2
+done
+
+echo "✗ Timed out waiting for Debezium connector and task to reach RUNNING." >&2
+echo "  Inspect: curl -i $connector_url/status" >&2
+exit 1

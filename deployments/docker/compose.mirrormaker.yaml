@@ -3,7 +3,22 @@
 # Paths resolve relative to this Compose file; credentials are isolated-lab defaults.
 
 services:
-  # Defines this service or named volume in the merged Compose project.
+  # Prepare the secondary broker's named volume before Kafka runs as UID 1000.
+  # Required on first use of a fresh Docker volume; safe to repeat on restarts.
+  # This init container changes permissions only, never deletes Kafka data.
+  mirror-volume-init:
+    image: apache/kafka:4.3.1
+    user: "0:0"
+    entrypoint: ["/bin/sh", "-ec"]
+    command: |
+      mkdir -p /tmp/kraft-combined-logs
+      chown -R 1000:1000 /tmp/kraft-combined-logs
+      echo "Secondary Kafka storage is writable by UID 1000."
+    volumes:
+      - ledgerflow-mirror-broker:/tmp/kraft-combined-logs
+    restart: "no"
+
+  # Secondary broker starts only after the volume has been prepared.
   mirror-broker:
     image: apache/kafka:4.3.1
     container_name: ledgerflow-mirror-broker
@@ -24,6 +39,9 @@ services:
       KAFKA_NUM_PARTITIONS: 3
       KAFKA_HEAP_OPTS: -Xms384m -Xmx384m
       KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+    depends_on:
+      mirror-volume-init:
+        condition: service_completed_successfully
     ports:
       - "59092:19093"
     volumes:

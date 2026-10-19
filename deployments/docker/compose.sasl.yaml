@@ -25,6 +25,18 @@ services:
     volumes:
       - ../../security/tls:/etc/ledgerflow/security:ro
       - ../../security/sasl:/etc/ledgerflow/sasl:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          /opt/kafka/bin/kafka-broker-api-versions.sh
+          --bootstrap-server broker-1:19092
+          --command-config /etc/ledgerflow/sasl/admin.properties
+          >/dev/null 2>&1
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
   # Defines this service or named volume in the merged Compose project.
   broker-2:
     environment:
@@ -34,6 +46,18 @@ services:
     volumes:
       - ../../security/tls:/etc/ledgerflow/security:ro
       - ../../security/sasl:/etc/ledgerflow/sasl:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          /opt/kafka/bin/kafka-broker-api-versions.sh
+          --bootstrap-server broker-1:19092
+          --command-config /etc/ledgerflow/sasl/admin.properties
+          >/dev/null 2>&1
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
   # Defines this service or named volume in the merged Compose project.
   broker-3:
     environment:
@@ -43,3 +67,15 @@ services:
     volumes:
       - ../../security/tls:/etc/ledgerflow/security:ro
       - ../../security/sasl:/etc/ledgerflow/sasl:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          /opt/kafka/bin/kafka-broker-api-versions.sh
+          --bootstrap-server broker-1:19092
+          --command-config /etc/ledgerflow/sasl/admin.properties
+          >/dev/null 2>&1
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s

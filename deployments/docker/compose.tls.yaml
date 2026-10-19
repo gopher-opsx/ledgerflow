@@ -22,6 +22,20 @@ services:
     volumes:
     - ../../security/tls:/etc/kafka/secrets:ro
     - ../../security/tls:/etc/ledgerflow/security:ro
+    # Check Kafka using the trusted TLS client configuration.
+    # A plaintext health check would fail against the SSL listener.
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          /opt/kafka/bin/kafka-broker-api-versions.sh
+          --bootstrap-server localhost:19092
+          --command-config /etc/ledgerflow/security/client-ssl.properties
+          >/dev/null 2>&1
+      interval: 10s
+      timeout: 15s
+      retries: 12
+      start_period: 30s
   broker-2:
     environment:
       KAFKA_LISTENERS: SSL://:19092,SSL_HOST://:9092
@@ -41,6 +55,20 @@ services:
     volumes:
     - ../../security/tls:/etc/kafka/secrets:ro
     - ../../security/tls:/etc/ledgerflow/security:ro
+    # Check Kafka using the trusted TLS client configuration.
+    # A plaintext health check would fail against the SSL listener.
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          /opt/kafka/bin/kafka-broker-api-versions.sh
+          --bootstrap-server localhost:19092
+          --command-config /etc/ledgerflow/security/client-ssl.properties
+          >/dev/null 2>&1
+      interval: 10s
+      timeout: 15s
+      retries: 12
+      start_period: 30s
   broker-3:
     environment:
       KAFKA_LISTENERS: SSL://:19092,SSL_HOST://:9092
@@ -60,3 +88,17 @@ services:
     volumes:
     - ../../security/tls:/etc/kafka/secrets:ro
     - ../../security/tls:/etc/ledgerflow/security:ro
+    # Check Kafka using the trusted TLS client configuration.
+    # A plaintext health check would fail against the SSL listener.
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          /opt/kafka/bin/kafka-broker-api-versions.sh
+          --bootstrap-server localhost:19092
+          --command-config /etc/ledgerflow/security/client-ssl.properties
+          >/dev/null 2>&1
+      interval: 10s
+      timeout: 15s
+      retries: 12
+      start_period: 30s

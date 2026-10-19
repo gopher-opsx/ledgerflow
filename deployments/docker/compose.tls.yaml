@@ -1,53 +1,56 @@
-# Overlay replacing broker data listeners with SSL and mounting generated lab keystores.
-# Merge with the base lab; clients and healthchecks also need SSL settings before this path is recording-ready.
-# Paths resolve relative to this Compose file; credentials are isolated-lab defaults.
-
+# Kafka TLS overlay, using the official apache/kafka Docker image SSL secrets convention.
+# Generated credentials and keystores are under security/tls (gitignored).
+# Important: The base plaintext health checks and application clients need TLS updates
+# before this SSL-only listener overlay can support the full LedgerFlow stack.
 services:
-  # Defines this service or named volume in the merged Compose project.
   broker-1:
     environment:
       KAFKA_LISTENERS: SSL://:19092,SSL_HOST://:9092
       KAFKA_ADVERTISED_LISTENERS: SSL://broker-1:19092,SSL_HOST://localhost:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,SSL:SSL,SSL_HOST:SSL
       KAFKA_INTER_BROKER_LISTENER_NAME: SSL
-      KAFKA_SSL_KEYSTORE_LOCATION: /etc/ledgerflow/security/broker-1.keystore.p12
-      KAFKA_SSL_KEYSTORE_PASSWORD: ledgerflow
+      KAFKA_SSL_KEYSTORE_FILENAME: broker-1.keystore.p12
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: keystore-creds
+      KAFKA_SSL_KEY_CREDENTIALS: key-creds
+      KAFKA_SSL_TRUSTSTORE_FILENAME: truststore.p12
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: truststore-creds
       KAFKA_SSL_KEYSTORE_TYPE: PKCS12
-      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/ledgerflow/security/truststore.p12
-      KAFKA_SSL_TRUSTSTORE_PASSWORD: ledgerflow
       KAFKA_SSL_TRUSTSTORE_TYPE: PKCS12
       KAFKA_SSL_CLIENT_AUTH: none
     volumes:
-      - ../../security/tls:/etc/ledgerflow/security:ro
-  # Defines this service or named volume in the merged Compose project.
+    - ../../security/tls:/etc/kafka/secrets:ro
+    - ../../security/tls:/etc/ledgerflow/security:ro
   broker-2:
     environment:
       KAFKA_LISTENERS: SSL://:19092,SSL_HOST://:9092
       KAFKA_ADVERTISED_LISTENERS: SSL://broker-2:19092,SSL_HOST://localhost:39092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,SSL:SSL,SSL_HOST:SSL
       KAFKA_INTER_BROKER_LISTENER_NAME: SSL
-      KAFKA_SSL_KEYSTORE_LOCATION: /etc/ledgerflow/security/broker-2.keystore.p12
-      KAFKA_SSL_KEYSTORE_PASSWORD: ledgerflow
+      KAFKA_SSL_KEYSTORE_FILENAME: broker-2.keystore.p12
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: keystore-creds
+      KAFKA_SSL_KEY_CREDENTIALS: key-creds
+      KAFKA_SSL_TRUSTSTORE_FILENAME: truststore.p12
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: truststore-creds
       KAFKA_SSL_KEYSTORE_TYPE: PKCS12
-      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/ledgerflow/security/truststore.p12
-      KAFKA_SSL_TRUSTSTORE_PASSWORD: ledgerflow
       KAFKA_SSL_TRUSTSTORE_TYPE: PKCS12
       KAFKA_SSL_CLIENT_AUTH: none
     volumes:
-      - ../../security/tls:/etc/ledgerflow/security:ro
-  # Defines this service or named volume in the merged Compose project.
+    - ../../security/tls:/etc/kafka/secrets:ro
+    - ../../security/tls:/etc/ledgerflow/security:ro
   broker-3:
     environment:
       KAFKA_LISTENERS: SSL://:19092,SSL_HOST://:9092
       KAFKA_ADVERTISED_LISTENERS: SSL://broker-3:19092,SSL_HOST://localhost:49092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,SSL:SSL,SSL_HOST:SSL
       KAFKA_INTER_BROKER_LISTENER_NAME: SSL
-      KAFKA_SSL_KEYSTORE_LOCATION: /etc/ledgerflow/security/broker-3.keystore.p12
-      KAFKA_SSL_KEYSTORE_PASSWORD: ledgerflow
+      KAFKA_SSL_KEYSTORE_FILENAME: broker-3.keystore.p12
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: keystore-creds
+      KAFKA_SSL_KEY_CREDENTIALS: key-creds
+      KAFKA_SSL_TRUSTSTORE_FILENAME: truststore.p12
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: truststore-creds
       KAFKA_SSL_KEYSTORE_TYPE: PKCS12
-      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/ledgerflow/security/truststore.p12
-      KAFKA_SSL_TRUSTSTORE_PASSWORD: ledgerflow
       KAFKA_SSL_TRUSTSTORE_TYPE: PKCS12
       KAFKA_SSL_CLIENT_AUTH: none
     volumes:
-      - ../../security/tls:/etc/ledgerflow/security:ro
+    - ../../security/tls:/etc/kafka/secrets:ro
+    - ../../security/tls:/etc/ledgerflow/security:ro

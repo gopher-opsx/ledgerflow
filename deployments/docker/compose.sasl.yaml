@@ -20,6 +20,7 @@ services:
       KAFKA_SSL_KEYSTORE_CREDENTIALS: keystore-creds
       KAFKA_SSL_KEY_CREDENTIALS: key-creds
       KAFKA_SSL_KEYSTORE_TYPE: PKCS12
+
       KAFKA_SSL_TRUSTSTORE_FILENAME: truststore.p12
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: truststore-creds
       KAFKA_SSL_TRUSTSTORE_TYPE: PKCS12
@@ -71,6 +72,10 @@ services:
   broker-3:
     environment:
       <<: *sasl_env
+      # Kafka's internal SASL_SSL validation requires the trusted CA.
+      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/truststore.p12
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: ledgerflow
+      KAFKA_SSL_TRUSTSTORE_TYPE: PKCS12
       KAFKA_ADVERTISED_LISTENERS: SASL_SSL://broker-3:19092,SASL_SSL_HOST://localhost:49092
       KAFKA_SSL_KEYSTORE_FILENAME: broker-3.keystore.p12
       KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/ledgerflow/sasl/kafka_server_jaas.conf"

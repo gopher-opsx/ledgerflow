@@ -25,7 +25,7 @@ services:
       KAFKA_SSL_TRUSTSTORE_TYPE: PKCS12
       KAFKA_AUTHORIZER_CLASS_NAME: org.apache.kafka.metadata.authorizer.StandardAuthorizer
       KAFKA_SUPER_USERS: User:admin
-      KAFKA_OPTS: "-Dledgerflow.sasl.lab=true"
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/ledgerflow/sasl/kafka_server_jaas.conf"
     volumes:
       - ../../security/tls:/etc/kafka/secrets:ro
       # Retain the Lesson 27 client-properties truststore path.
@@ -49,7 +49,7 @@ services:
       <<: *sasl_env
       KAFKA_ADVERTISED_LISTENERS: SASL_SSL://broker-2:19092,SASL_SSL_HOST://localhost:39092
       KAFKA_SSL_KEYSTORE_FILENAME: broker-2.keystore.p12
-      KAFKA_OPTS: "-Dledgerflow.sasl.lab=true"
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/ledgerflow/sasl/kafka_server_jaas.conf"
     volumes:
       - ../../security/tls:/etc/kafka/secrets:ro
       # Retain the Lesson 27 client-properties truststore path.
@@ -73,7 +73,7 @@ services:
       <<: *sasl_env
       KAFKA_ADVERTISED_LISTENERS: SASL_SSL://broker-3:19092,SASL_SSL_HOST://localhost:49092
       KAFKA_SSL_KEYSTORE_FILENAME: broker-3.keystore.p12
-      KAFKA_OPTS: "-Dledgerflow.sasl.lab=true"
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/ledgerflow/sasl/kafka_server_jaas.conf"
     volumes:
       - ../../security/tls:/etc/kafka/secrets:ro
       # Retain the Lesson 27 client-properties truststore path.

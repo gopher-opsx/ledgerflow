@@ -1,0 +1,14 @@
+services:
+  tls-tools:
+    image: apache/kafka:4.3.1
+
+    working_dir: /workspace
+
+    entrypoint:
+      - /bin/bash
+      - ./scripts/security/generate-tls.sh
+
+    volumes:
+      - ../..:/workspace
+
+    restart: "no"

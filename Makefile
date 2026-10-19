@@ -102,7 +102,7 @@ k8s-troubleshoot:
 
 # Replaces generated lab certificate files and builds broker keystores and a shared truststore. Requires OpenSSL and keytool.
 tls-generate:
-	./scripts/security/generate-tls.sh
+	docker compose -f deployments/docker/compose.tls-tools.yaml run --rm tls-tools
 
 # Adds topic and consumer-group permissions for the lab principal using the mounted admin credentials.
 acl-apply:

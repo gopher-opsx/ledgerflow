@@ -1,5 +1,5 @@
 # Overlay adding SASL/PLAIN over SSL and broker ACL authorization using lab credentials.
-# Client settings, healthchecks, and controller authorization must be rehearsed before recording.
+# Client settings, broker health checks, and controller authorization must be rehearsed before recording.
 # Paths resolve relative to this Compose file; credentials are isolated-lab defaults.
 
 services:
@@ -14,16 +14,21 @@ services:
       KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
       KAFKA_LISTENER_NAME_SASL_SSL_PLAIN_SASL_JAAS_CONFIG: org.apache.kafka.common.security.plain.PlainLoginModule required username="admin" password="admin-secret" user_admin="admin-secret" user_ledgerflow="ledgerflow-secret";
       KAFKA_LISTENER_NAME_SASL_SSL_HOST_PLAIN_SASL_JAAS_CONFIG: org.apache.kafka.common.security.plain.PlainLoginModule required username="admin" password="admin-secret" user_admin="admin-secret" user_ledgerflow="ledgerflow-secret";
-      KAFKA_SSL_KEYSTORE_LOCATION: /etc/ledgerflow/security/broker-1.keystore.p12
-      KAFKA_SSL_KEYSTORE_PASSWORD: ledgerflow
+      # The official Kafka Docker entrypoint requires filenames and credential files.
+      # Files are mounted at /etc/kafka/secrets and created by make tls-generate.
+      KAFKA_SSL_KEYSTORE_FILENAME: broker-1.keystore.p12
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: keystore-creds
+      KAFKA_SSL_KEY_CREDENTIALS: key-creds
       KAFKA_SSL_KEYSTORE_TYPE: PKCS12
-      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/ledgerflow/security/truststore.p12
-      KAFKA_SSL_TRUSTSTORE_PASSWORD: ledgerflow
+      KAFKA_SSL_TRUSTSTORE_FILENAME: truststore.p12
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: truststore-creds
       KAFKA_SSL_TRUSTSTORE_TYPE: PKCS12
       KAFKA_AUTHORIZER_CLASS_NAME: org.apache.kafka.metadata.authorizer.StandardAuthorizer
       KAFKA_SUPER_USERS: User:admin
       KAFKA_OPTS: "-Dledgerflow.sasl.lab=true"
     volumes:
+      - ../../security/tls:/etc/kafka/secrets:ro
+      # Retain the Lesson 27 client-properties truststore path.
       - ../../security/tls:/etc/ledgerflow/security:ro
       - ../../security/sasl:/etc/ledgerflow/sasl:ro
     healthcheck:
@@ -43,9 +48,11 @@ services:
     environment:
       <<: *sasl_env
       KAFKA_ADVERTISED_LISTENERS: SASL_SSL://broker-2:19092,SASL_SSL_HOST://localhost:39092
-      KAFKA_SSL_KEYSTORE_LOCATION: /etc/ledgerflow/security/broker-2.keystore.p12
+      KAFKA_SSL_KEYSTORE_FILENAME: broker-2.keystore.p12
       KAFKA_OPTS: "-Dledgerflow.sasl.lab=true"
     volumes:
+      - ../../security/tls:/etc/kafka/secrets:ro
+      # Retain the Lesson 27 client-properties truststore path.
       - ../../security/tls:/etc/ledgerflow/security:ro
       - ../../security/sasl:/etc/ledgerflow/sasl:ro
     healthcheck:
@@ -53,7 +60,7 @@ services:
         - CMD-SHELL
         - >-
           /opt/kafka/bin/kafka-broker-api-versions.sh
-          --bootstrap-server broker-1:19092
+          --bootstrap-server broker-2:19092
           --command-config /etc/ledgerflow/sasl/admin.properties
           >/dev/null 2>&1
       interval: 10s
@@ -65,9 +72,11 @@ services:
     environment:
       <<: *sasl_env
       KAFKA_ADVERTISED_LISTENERS: SASL_SSL://broker-3:19092,SASL_SSL_HOST://localhost:49092
-      KAFKA_SSL_KEYSTORE_LOCATION: /etc/ledgerflow/security/broker-3.keystore.p12
+      KAFKA_SSL_KEYSTORE_FILENAME: broker-3.keystore.p12
       KAFKA_OPTS: "-Dledgerflow.sasl.lab=true"
     volumes:
+      - ../../security/tls:/etc/kafka/secrets:ro
+      # Retain the Lesson 27 client-properties truststore path.
       - ../../security/tls:/etc/ledgerflow/security:ro
       - ../../security/sasl:/etc/ledgerflow/sasl:ro
     healthcheck:
@@ -75,7 +84,7 @@ services:
         - CMD-SHELL
         - >-
           /opt/kafka/bin/kafka-broker-api-versions.sh
-          --bootstrap-server broker-1:19092
+          --bootstrap-server broker-3:19092
           --command-config /etc/ledgerflow/sasl/admin.properties
           >/dev/null 2>&1
       interval: 10s

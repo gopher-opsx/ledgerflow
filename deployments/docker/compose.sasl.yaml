@@ -97,3 +97,17 @@ services:
       timeout: 5s
       retries: 12
       start_period: 30s
+
+  controller-1:
+    environment: &controller_acl_env
+      KAFKA_AUTHORIZER_CLASS_NAME: org.apache.kafka.metadata.authorizer.StandardAuthorizer
+      KAFKA_SUPER_USERS: "User:admin;User:ANONYMOUS"
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "false"
+
+  controller-2:
+    environment:
+      <<: *controller_acl_env
+
+  controller-3:
+    environment:
+      <<: *controller_acl_env

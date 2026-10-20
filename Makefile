@@ -2,7 +2,7 @@
 # Start the base lab, create topics, then use smoke to verify the transaction path.
 # reset removes persistent data; down retains it.
 
-.PHONY: fmt test vet build up down topics smoke reset logs inspect-groups lab-lag lab-cleanup lab-broker-failure lab-producer-reliability integration-up connect-debezium mirrormaker-up lab-idempotency lab-dlt kind-create k8s-strimzi k8s-load-apps k8s-deploy-apps k8s-troubleshoot tls-generate acl-apply
+.PHONY: fmt test vet build up down topics smoke reset logs inspect-groups lab-lag lab-cleanup lab-broker-failure lab-producer-reliability integration-up connect-debezium mirrormaker-up lab-idempotency lab-dlt kind-create k8s-strimzi k8s-load-apps k8s-deploy-apps k8s-troubleshoot tls-generate acl-apply acl-reset
 
 # Format Go source in place.
 fmt:
@@ -107,3 +107,8 @@ tls-generate:
 # Adds topic and consumer-group permissions for the lab principal using the mounted admin credentials.
 acl-apply:
 	./scripts/security/apply-acls.sh
+
+# Remove only the LedgerFlow ACL grants created by acl-apply.
+# Preserve Kafka topics, data, certificates, and cluster configuration.
+acl-reset:
+	bash ./scripts/security/reset-acls.sh

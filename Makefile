@@ -78,7 +78,7 @@ lab-idempotency:
 
 # Publishes malformed JSON and looks for the same payload on the ledger dead-letter topic.
 lab-dlt:
-	./scripts/labs/dlt.sh
+	bash ./scripts/labs/dlt.sh
 
 # Creates the multi-node kind lab from the checked-in cluster configuration.
 kind-create:

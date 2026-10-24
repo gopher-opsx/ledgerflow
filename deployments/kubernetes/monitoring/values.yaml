@@ -29,6 +29,14 @@ grafana:
   enabled: true
   defaultDashboardsEnabled: true
 
+  # Explicitly provision the chart-managed Prometheus data source.
+  # These are the kube-prometheus-stack defaults, stated here for clarity.
+  sidecar:
+    datasources:
+      enabled: true
+      defaultDatasourceEnabled: true
+      isDefaultDatasource: true
+
   # Ephemeral storage is sufficient for local training.
   persistence:
     enabled: false

@@ -8,7 +8,7 @@ alertmanager:
 
 # Reduce local resource usage by disabling bundled alert rules.
 defaultRules:
-  create: false
+  create: true
 
 # These control-plane scrape endpoints are not assumed to be
 # reachable from the default Kind cluster.

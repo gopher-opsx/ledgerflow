@@ -1,6 +1,6 @@
 # LedgerFlow local Kubernetes monitoring.
 # Used in Lesson 35 with kube-prometheus-stack 89.2.0.
-# Local kind environment only — not production defaults.
+# Local Kind environment only — not production defaults.
 
 # Alert routing is outside this lesson.
 alertmanager:
@@ -11,7 +11,7 @@ defaultRules:
   create: false
 
 # These control-plane scrape endpoints are not assumed to be
-# reachable from the default kind cluster.
+# reachable from the default Kind cluster.
 kubeEtcd:
   enabled: false
 
@@ -29,8 +29,14 @@ grafana:
   enabled: true
   defaultDashboardsEnabled: true
 
-  # Explicitly provision the chart-managed Prometheus data source.
-  # These are the kube-prometheus-stack defaults, stated here for clarity.
+  # Use a pinned standard Grafana image to test the
+  # datasource plugin-loading issue observed in the lab.
+  image:
+    registry: docker.io
+    repository: grafana/grafana
+    tag: "12.3.3"
+
+  # Provision Prometheus automatically through the Grafana sidecar.
   sidecar:
     datasources:
       enabled: true

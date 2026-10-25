@@ -38,6 +38,13 @@ func NewTransactionConsumer(
 		kgo.ConsumerGroup(groupID),
 		kgo.ConsumeTopics(topic),
 		kgo.DisableAutoCommit(),
+
+		// Expose Kafka client warnings and errors in application logs.
+		// This helps diagnose DNS failures, unreachable brokers, and
+		// connection problems without changing consumer behavior.
+		kgo.WithLogger(
+			kgo.BasicLogger(log.Writer(), kgo.LogLevelWarn, nil),
+		),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("create kafka consumer: %w", err)
@@ -46,6 +53,12 @@ func NewTransactionConsumer(
 	dltProducer, err := kgo.NewClient(
 		kgo.SeedBrokers(brokers...),
 		kgo.RequiredAcks(kgo.AllISRAcks()),
+
+		// Log Kafka producer warnings and errors as well.
+		// This is useful when publishing failed records to the DLT.
+		kgo.WithLogger(
+			kgo.BasicLogger(log.Writer(), kgo.LogLevelWarn, nil),
+		),
 	)
 	if err != nil {
 		client.Close()
